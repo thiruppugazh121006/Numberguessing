@@ -1,0 +1,32 @@
+const express = require('express');
+const app = express();
+const path = require('path');
+
+let randomNumber = Math.floor(Math.random() * 100) + 1;
+let attempts = 0;
+
+app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.post('/guess', (req, res) => {
+  const userGuess = req.body.guess;
+  attempts++;
+
+  let message;
+  if (userGuess === randomNumber) {
+    message = `Correct! The number was ${randomNumber}. Game resetting...`;
+    randomNumber = Math.floor(Math.random() * 100) + 1;
+    attempts = 0;
+  } else if (userGuess > randomNumber) {
+    message = "Too high!";
+  } else {
+    message = "Too low!";
+  }
+
+  res.json({ message, attempts });
+});
+
+const PORT = 3000;
+app.listen(PORT, () => {
+  console.log(`Server running at http://localhost:${PORT}`);
+});
